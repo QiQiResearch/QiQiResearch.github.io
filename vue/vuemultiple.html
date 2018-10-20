@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>基于 vue 配置多页面应用 | 技术博客</title>
+    <meta name="description" content="我的个人网站">
+    <link rel="icon" href="/logo.jpg">
+    
+    <link rel="preload" href="/assets/css/styles.5a942aff.css" as="style"><link rel="preload" href="/assets/js/app.5a942aff.js" as="script"><link rel="preload" href="/assets/js/5.5564f47b.js" as="script"><link rel="prefetch" href="/assets/css/2.styles.9d6c44ce.css"><link rel="prefetch" href="/assets/css/1.styles.5a8ea794.css"><link rel="prefetch" href="/assets/js/1.5a8ea794.js"><link rel="prefetch" href="/assets/js/2.9d6c44ce.js"><link rel="prefetch" href="/assets/js/3.78e59ba1.js"><link rel="prefetch" href="/assets/js/4.4e0cd920.js"><link rel="prefetch" href="/assets/js/6.d0ec4327.js">
+    <link rel="stylesheet" href="/assets/css/2.styles.9d6c44ce.css"><link rel="stylesheet" href="/assets/css/1.styles.5a8ea794.css"><link rel="stylesheet" href="/assets/css/styles.5a942aff.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">技术博客</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title">vue 相关</span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/vue/vuemultiple.html" class="nav-link router-link-exact-active router-link-active">vue 多页面应用</a></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title">vue 相关</span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/vue/vuemultiple.html" class="nav-link router-link-exact-active router-link-active">vue 多页面应用</a></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><div class="sidebar-group first collapsable"><p class="sidebar-heading open"><span>vue 杂货铺</span> <span class="arrow down"></span></p> <ul class="sidebar-group-items"><li><a href="/vue/vuemultiple.html" class="active sidebar-link">基于 vue 配置多页面应用</a><ul class="sidebar-sub-headers"></ul></li></ul></div></li></ul> </div> <div class="page"> <div class="content"><h1 id="基于-vue-配置多页面应用"><a href="#基于-vue-配置多页面应用" aria-hidden="true" class="header-anchor">#</a> 基于 vue 配置多页面应用</h1> <p><strong>前言:</strong> 本文基于<code>vue 2.5.2</code>, <code>webpack 3.6.0</code>（配置多页面原理类似，实现方法各有千秋，可根据需要进行定制化）</p> <p><code>vue</code> 是单页面应用。但是在做大型项目时，单页面往往无法满足我们的需求，因此需要配置多页面应用。</p> <h3 id="_1-新建-vue-项目"><a href="#_1-新建-vue-项目" aria-hidden="true" class="header-anchor">#</a> 1. 新建 vue 项目</h3> <div class="language- extra-class"><pre class="language-text"><code>vue init webpack vue_multiple_test
+cd vue_multiple_test
+npm install
+</code></pre></div><h3 id="_2-安装-glob"><a href="#_2-安装-glob" aria-hidden="true" class="header-anchor">#</a> 2. 安装 glob</h3> <div class="language- extra-class"><pre class="language-text"><code>npm i glob --save-dev
+</code></pre></div><p><code>glob</code> 模块用于查找符合要求的文件</p> <h3 id="_3-目标结构目录"><a href="#_3-目标结构目录" aria-hidden="true" class="header-anchor">#</a> 3. 目标结构目录</h3> <div class="language- extra-class"><pre class="language-text"><code>.
+├── README.md
+├── build
+│   ├── build.js
+│   ├── check-versions.js
+│   ├── logo.png
+│   ├── utils.js
+│   ├── vue-loader.conf.js
+│   ├── webpack.base.conf.js
+│   ├── webpack.dev.conf.js
+│   └── webpack.prod.conf.js
+├── config
+│   ├── dev.env.js
+│   ├── index.js
+│   └── prod.env.js
+├── generatePage.sh
+├── index.html
+├── package-lock.json
+├── package.json
+├── src
+│   ├── assets
+│   │   └── logo.png
+│   └── pages
+│       ├── page1
+│       │   ├── App.vue
+│       │   ├── index.html
+│       │   └── index.js
+│       └── page2
+│           ├── App.vue
+│           ├── index.html
+│           └── index.js
+└── static
+
+</code></pre></div><p>其中，<code>pages</code>文件夹用于放置页面。 <code>page1</code> 和 <code>page2</code>用于分别放置不同页面，且默认均包含三个文档: <code>App.vue</code>, <code>index.html</code>, <code>index.js</code>, 这样在多人协作时，可以更为清晰地明确每个文件的含义。除此之外，此文件也可配置路由。</p> <h3 id="_4-utils-增加下述代码"><a href="#_4-utils-增加下述代码" aria-hidden="true" class="header-anchor">#</a> 4. <code>utils</code> 增加下述代码:</h3> <div class="language- extra-class"><pre class="language-text"><code>const glob = require('glob')
+const PAGE_PATH = path.resolve(__dirname, '../src/pages')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+</code></pre></div><p>其中：<code>PAGE_PATH</code> 为所有页面所在的文件夹路径，指向 <code>pages</code>文件夹。</p> <div class="language- extra-class"><pre class="language-text"><code>exports.entries = function () {
+    /*用于匹配 pages 下一级文件夹中的 index.js 文件 */
+    var entryFiles = glob.sync(PAGE_PATH + '/*/index.js')
+    var map = {}
+    entryFiles.forEach((filePath) =&gt; {
+        /* 下述两句代码用于取出 pages 下一级文件夹的名称 */
+        var entryPath = path.dirname(filePath)
+        var filename = entryPath.substring(entryPath.lastIndexOf('\/') + 1)
+        /* 生成对应的键值对 */
+        map[filename] = filePath
+    })
+    return map
+}
+</code></pre></div><p>该方法用于生成多页面的入口对象，例如本例，获得的入口对象如下：</p> <div class="language- extra-class"><pre class="language-text"><code>{ 
+    page1: '/Users/work/learn/vue/vue_multiple_test/src/pages/page1/index.js',
+    page2: '/Users/work/learn/vue/vue_multiple_test/src/pages/page2/index.js',
+ }
+</code></pre></div><p>其中：<code>key</code> 为当前页面的文件夹名称，
+<code>value</code> 为当前页面的入口文件名称</p> <div class="language- extra-class"><pre class="language-text"><code>exports.htmlPlugin = function () {
+    let entryHtml = glob.sync(PAGE_PATH + '/*/index.html')
+    let arr = []
+    entryHtml.forEach((filePath) =&gt; {
+        var entryPath = path.dirname(filePath)
+        var filename = entryPath.substring(entryPath.lastIndexOf('\/') + 1)
+        let conf = {
+            template: filePath,
+            filename: filename + `/index.html`,
+            chunks: ['manifest', 'vendor', filename],
+            inject: true
+        }
+        if (process.env.NODE_ENV === 'production') {
+            let productionConfig = {
+                minify: {
+                  removeComments: true,         // 移除注释
+                  collapseWhitespace: true,     // 删除空白符和换行符
+                  removeAttributeQuotes: true   // 移除属性引号 
+                },
+                chunksSortMode: 'dependency'    // 对引入的chunk模块进行排序
+            }
+            conf = {...conf, ...productionConfig} //合并基础配置和生产环境专属配置
+        }
+        arr.push(new HtmlWebpackPlugin(conf))
+    })
+    return arr
+}
+</code></pre></div><h3 id="_4-webpack-base-conf-js修改入口如下："><a href="#_4-webpack-base-conf-js修改入口如下：" aria-hidden="true" class="header-anchor">#</a> 4. <code>webpack.base.conf.js</code>修改入口如下：</h3> <pre><code>entry: utils.entries()
+</code></pre> <h3 id="_5-webpack-dev-conf-js-删除下述代码"><a href="#_5-webpack-dev-conf-js-删除下述代码" aria-hidden="true" class="header-anchor">#</a> 5. <code>webpack.dev.conf.js</code> 删除下述代码</h3> <div class="language- extra-class"><pre class="language-text"><code>new HtmlWebpackPlugin({
+    filename: 'index.html',
+    template: 'index.html',
+    inject: true
+})
+</code></pre></div><h3 id="_6-webpack-prod-conf-js-删除下述代码"><a href="#_6-webpack-prod-conf-js-删除下述代码" aria-hidden="true" class="header-anchor">#</a> 6. <code>webpack.prod.conf.js</code> 删除下述代码</h3> <div class="language- extra-class"><pre class="language-text"><code>new HtmlWebpackPlugin({
+    filename: config.build.index,
+    template: 'index.html',
+    inject: true,
+    minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+    },
+    chunksSortMode: 'dependency'
+})
+</code></pre></div><h3 id="_7-构建结果"><a href="#_7-构建结果" aria-hidden="true" class="header-anchor">#</a> 7. 构建结果</h3> <pre><code>【dev】开发环境下，执行 npm run dev 访问:
+
+ http://localhost:8080/page1/index.html
+ http://localhost:8080/page2/index.html
+
+ 即为访问不同的页面
+
+
+【production】生产环境下，执行 npm run build, 生成的文件目录如下所示:
+
+│   ├── dist
+│   ├── page1
+│   │   └── index.html
+│   ├── page2
+│   │   └── index.html
+│   └── static
+│       ├── css
+│       │   ├── page1.86a4513a3e04c0dcb73e6d6aea4580e4.css
+│       │   ├── page1.86a4513a3e04c0dcb73e6d6aea4580e4.css.map
+│       │   ├── page2.86a4513a3e04c0dcb73e6d6aea4580e4.css
+│       │   └── page2.86a4513a3e04c0dcb73e6d6aea4580e4.css.map
+│       └── js
+│           ├── manifest.0c1cd46d93b12dcd0191.js
+│           ├── manifest.0c1cd46d93b12dcd0191.js.map
+│           ├── page1.e2997955f3b0f2090b7a.js
+│           ├── page1.e2997955f3b0f2090b7a.js.map
+│           ├── page2.4d41f3b684a56847f057.js
+│           ├── page2.4d41f3b684a56847f057.js.map
+│           ├── vendor.bb335a033c3b9e5d296a.js
+│           └── vendor.bb335a033c3b9e5d296a.js.map
+</code></pre> <h3 id="_8-【懒人福利】使用shell脚本自动构建基础页面"><a href="#_8-【懒人福利】使用shell脚本自动构建基础页面" aria-hidden="true" class="header-anchor">#</a> 8.【懒人福利】使用<code>shell</code>脚本自动构建基础页面</h3> <p>在项目文件下新建<code>shell</code>脚本<code>generatePage.sh</code>, 并在脚本中写入下述代码：</p> <div class="language-sh extra-class"><pre class="language-text"><code>#!/bin/bash
+# 打开 pages 文件夹，并创建文件
+cd src/pages
+for file in $(ls)
+do
+  if [ $file == $1 ];then
+  	echo $1' 文件已存在, 请使用其他名字'
+  	exit
+  fi
+done
+mkdir $1
+cd $1
+# 生成 index.html
+echo &quot;&quot; &gt; index.html
+echo '&lt;!DOCTYPE html&gt;
+  &lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;&gt;
+    &lt;title&gt;&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+    &lt;!-- built files will be auto injected --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;' &gt; index.html
+
+# 生成 App.vue
+echo &quot;&quot; &gt; App.vue
+echo '&lt;template&gt;
+  &lt;div id=&quot;app&quot;&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+  name: &quot;App&quot;
+}
+&lt;/script&gt;
+
+&lt;style&gt;
+#app {}
+&lt;/style&gt;' &gt; App.vue
+
+# 生成 index.js
+echo &quot;&quot; &gt; index.js
+echo &quot;import Vue from 'vue'
+import App from './App'
+
+Vue.config.productionTip = false
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  components: { App },
+  template: '&lt;App/&gt;'
+})&quot; &gt; index.js
+
+
+
+</code></pre></div><p>之后在项目路径下输入下述命令:</p> <div class="language- extra-class"><pre class="language-text"><code>bash generatePage.sh page4
+</code></pre></div><p>即可在<code>pages</code>文件夹下生成一个名为<code>page4</code>的新页面。还可以通过自定义<code>shell</code>脚本的内容写入路由等，以实现定制需求。</p></div> <div class="page-edit"><!----> <!----></div> <!----> </div> <!----></div></div>
+    <script src="/assets/js/5.5564f47b.js" defer></script><script src="/assets/js/app.5a942aff.js" defer></script>
+  </body>
+</html>
